@@ -6,8 +6,27 @@ import './OutputComponent.css';
 
 function OutputComponent({ userInput, setSelectedValue }) {
   const [selectedOption, setSelectedOption] = useState('');           // selectedOption: 변경 전(초기값)   setSelectedOption: 변경 후
-  // const [keyword, setKeyword] = useState(''); // keyword 상태를 추가합니다.
-  // const [top_nouns, setTop_nouns] = useState(''); // top_nouns 상태를 추가합니다.
+  const [pnData, setpnData] = useState({
+    P_Text: [],
+    N_Text: [],
+    Sum_P: [],
+    Sum_N: [],
+  });
+ 
+  async function fetchDataHandler(){
+    const response = await fetch('http://127.0.0.1:5000/process');
+    const data = await response.json();
+
+    const transformedData = {
+      P_Text: data.positive_texts,
+      N_Text: data.negative_texts,
+      Sum_P: data.sum_p_texts,
+      Sum_N: data.sum_n_texts,
+    };
+    setpnData(transformedData);
+  }
+  
+
   let output;
 
   const handleProcessClick = (option) => {         // select 드롭다운 메뉴에서 선택한 옵션에 따라 상태를 업데이트하는 이벤트 핸들러 함수
@@ -19,19 +38,31 @@ function OutputComponent({ userInput, setSelectedValue }) {
       setSelectedValue(option);
     }
   };
-    
+  
+
+
+
   if (selectedOption === ": 유리 / 불리 판단") {
+
     output = (
       <div className="output-box">
         <div className="judgement-box">
-          {/* userInput을 prop으로 전달하여 TitleModel에서 사용할 수 있게 합니다. */}
-          {/* <TitleModel userInput={userInput} setKeyword={setKeyword} /> setKeyword를 prop으로 전달합니다. */}
-          <p>유불리 판단 텍스트의 리스트</p>
+          
+          
+          <p>유리 리스트</p>
+          <ul>
+           {pnData.Sum_P.map((text, index) => (
+          <li key={index}>{text}</li>
+        ))}
+          </ul>
         </div>
-
         <div className="summary-box">
-          {/* <KeywordModel userInput={userInput} setTop_nouns={setTop_nouns}/> */}
-          <p>해당 텍스트의 요약본</p>
+          <p>불리 리스트</p>
+          <ul>
+           {pnData.Sum_N.map((text, index) => (
+          <li key={index}>{text}</li>
+        ))}
+          </ul>
         </div>
       </div>
     );
@@ -41,9 +72,9 @@ function OutputComponent({ userInput, setSelectedValue }) {
       <div className="output-box">
         <div className="title-box">
           {/* userInput을 prop으로 전달하여 TitleModel에서 사용할 수 있게 합니다. */}
-          {/* <TitleModel userInput={userInput} setKeyword={setKeyword} /> setKeyword를 prop으로 전달합니다. */}
+          {/* <TitleModel userInput={userInput} setKeyword={setKeyword} /> setKeyword를 prop으로 전달합니다. */}      
           <p>타이틀 박스입니다.</p>
-        </div>
+        </div>      
 
         <div className="keyword-box">
           {/* <KeywordModel userInput={userInput} setTop_nouns={setTop_nouns}/> */}
@@ -63,7 +94,7 @@ function OutputComponent({ userInput, setSelectedValue }) {
       <div className="output-buttons">
         <select
           value={selectedOption}
-          onChange={(e) => handleProcessClick(e.target.value)}
+          onChange={(e) =>{ handleProcessClick(e.target.value); fetchDataHandler()}}
         >
           <option value="">시스템을 선택하세요.</option>
           <option value=": 유리 / 불리 판단">유리 / 불리 판단</option>

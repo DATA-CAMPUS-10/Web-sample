@@ -46,6 +46,7 @@ function InputComponent({ handleInputChange }) {
         />
       )}
       {/* 이미지 미리보기 */}
+      
     </div>
   );
 }
