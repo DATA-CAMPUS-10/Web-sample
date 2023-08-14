@@ -13,3 +13,10 @@
   overflow: auto; /* 스크롤 추가 */
   white-space: pre-wrap;
 }
+.red-highlight {
+  color: red;
+}
+
+.blue-highlight {
+  color: blue;
+}

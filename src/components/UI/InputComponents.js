@@ -50,6 +50,20 @@ function InputComponent({ handleInputChange, setImage }) {
       extractedText.map((text, index) => (  // 수정된 부분 (변수명)
         <p key={index}>{text}</p>
       ))
+      // extractedText.map((text, index) => (
+      //   <p
+      //     key={index}
+      //     className={
+      //       pnData.Sum_P.some(pText => pText === text)
+      //         ? "red-highlight"
+      //         : pnData.Sum_N.some(nText => nText === text)
+      //         ? "blue-highlight"
+      //         : ""
+      //     }
+      //   >
+      //     {text}
+      //   </p>
+      // ))
     )
   }
   return (
