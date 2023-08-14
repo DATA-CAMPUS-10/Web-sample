@@ -10,5 +10,6 @@
   resize: none;
   border: 1px solid #ccc;
   padding: 10px;
-
+  overflow: auto; /* 스크롤 추가 */
+  white-space: pre-wrap;
 }

@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './InputComponent.css';
 
-function InputComponent({ handleInputChange }) {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [extractedText, setExtractedText] = useState('');
-
+function InputComponent({ handleInputChange, setImage }) {
+  // const [selectedImage, setSelectedImage] = useState(null);
+  const [extractedText, setExtractedText] = useState('분석할 약관 이미지를 선택해주세요.');
+  let result;
   const handleImageUpload = async (e) => {
     const image = e.target.files[0];
-    setSelectedImage(image);
+    //  setSelectedImage(image);
 
+    setImage(image);
     // 서버로 이미지를 업로드하고 텍스트를 추출
     const formData = new FormData();
     formData.append('image', image);
@@ -21,32 +22,50 @@ function InputComponent({ handleInputChange }) {
         },
       });
       console.log('Upload successful:', response.data);
+      response.data.text = response.data.text.split(/[\n]/).filter(sentence => sentence.trim() !== '');
       setExtractedText(response.data.text);
+      console.log(response.data.text);
     } catch (error) {
       console.error('Error during image upload:', error);
     }
   };
 
+  const handleServerSend = async () => {
+    try {
+      const sentences = extractedText.split(/[\n]/).filter(sentence => sentence.trim() !== '');
+      const response = await axios.post('http://localhost:5000/api/process', { sentences });
+
+      console.log('Server send successful:', response.data);
+    } catch (error) {
+      console.error('Error during sending to server:', error);
+    }
+  };
+  if (extractedText === "분석할 약관 이미지를 선택해주세요.") {
+    result = (
+      extractedText
+
+    );
+  } else {
+    result = (
+      extractedText.map((text, index) => (  // 수정된 부분 (변수명)
+        <p key={index}>{text}</p>
+      ))
+    )
+  }
   return (
     <div className="input-component">
-      <textarea
+      <div
         className="input-textarea"
-        placeholder="약관을 입력하세요..."
-        value={extractedText} // ocr 이미지로 받아온 텍스트
-        onChange={handleInputChange} // 사람이 작성한 텍스트
-        style={{ whiteSpace: 'pre-wrap' }}
-      />
+      >
+        {result}
+      </div>
+      <button onClick={handleServerSend}>서버로 전송</button>
+
       <input type="file" accept="image/*" onChange={handleImageUpload} />
-      {/* 이미지 미리보기 */}
-      {selectedImage && (
-        <img
-          src={URL.createObjectURL(selectedImage)}
-          alt="Uploaded"
-          style={{ width: '200px', height: 'auto', maxWidth: '100%' }}
-        />
-      )}
-      {/* 이미지 미리보기 */}
-      
+
+
+
+
     </div>
   );
 }
